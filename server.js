@@ -8,7 +8,10 @@ const Student = require("./models/Student");
 const Attendance = require("./models/attendance");
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: "*", // allow all origins for testing
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static("public"));
 
