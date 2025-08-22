@@ -1,7 +1,8 @@
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require('dotenv').config();
+
 
 const Student = require("./models/Student");
 const Attendance = require("./models/attendance");
