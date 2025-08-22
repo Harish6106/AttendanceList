@@ -1,4 +1,4 @@
-const apiBase = "http://localhost:5000";
+const apiBase = "https://your-render-service.onrender.com";
 
 // -------- NAVIGATION --------
 const dashboardBtn = document.getElementById("dashboardBtn");
