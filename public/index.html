@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <button id="dashboardBtn">📊 Dashboard</button>
+    <button id="studentsBtn">👨‍🎓 Students</button>
+  </nav>
+
+  <!-- Dashboard Page -->
+  <section id="dashboardPage" class="page active">
+    <h1>📊 Dashboard</h1>
+    <div id="dashboard" class="cards">
+      <div class="card total"><h2 id="total">0</h2><p>Total Students</p></div>
+      <div class="card present"><h2 id="present">0</h2><p>Present</p></div>
+      <div class="card absent"><h2 id="absent">0</h2><p>Absent</p></div>
+      <div class="card notMarked"><h2 id="notMarked">0</h2><p>Not Marked</p></div>
+    </div>
+
+    <!-- Container for showing student attendance -->
+    <div id="studentAttendanceContainer"></div>
+  </section>
+
+  <!-- Students Page -->
+  <section id="studentsPage" class="page">
+    <h1>👨‍🎓 Manage Students</h1>
+    <form id="studentForm">
+      <input type="text" id="studentName" placeholder="Enter student name" required>
+      <button type="submit">➕ Add Student</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Attendance</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="studentTableBody"></tbody>
+    </table>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
