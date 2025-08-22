@@ -1,4 +1,4 @@
-const apiBase = "https://your-render-service.onrender.com"; // <-- your Render URL
+const apiBase = "https://attendancelist.onrender.com"; // <-- your Render URL
 
 // Navigation
 document.getElementById("dashboardBtn").addEventListener("click", () => {
