@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-
+console.log("Connecting to MongoDB URI:", process.env.MONGO_URI);
 const Student = require("./models/Student");
 const Attendance = require("./models/attendance");
 
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // ✅ MongoDB connection
-mongoose.connect("process.env.MONGO_URI")
+mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("✅ MongoDB Connected"))
 .catch(err => console.error(err));
 
