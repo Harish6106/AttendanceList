@@ -3,29 +3,36 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-console.log("Connecting to MongoDB URI:", process.env.MONGO_URI);
 const Student = require("./models/Student");
-const Attendance = require("./models/attendance");
+const Attendance = require("./models/Attendance");
 
 const app = express();
-const corsOptions = {
-  origin: "*", // allow all origins for testing
-};
-app.use(cors(corsOptions));
+
+// ---------------- Middleware ----------------
+app.use(cors()); // allow all origins
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // for form parsing
 app.use(express.static("public"));
 
-// ✅ MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("✅ MongoDB Connected"))
-.catch(err => console.error(err));
+// ---------------- MongoDB Connection ----------------
+console.log("Connecting to MongoDB URI:", process.env.MONGO_URI);
 
-// -------------------- STUDENTS --------------------
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ MongoDB Connected"))
+.catch(err => console.error("❌ MongoDB Connection Error:", err));
+
+// ---------------- STUDENTS ----------------
 
 // Add a student
 app.post("/students", async (req, res) => {
   try {
-    const student = new Student({ name: req.body.name });
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ error: "Name is required" });
+
+    const student = new Student({ name });
     await student.save();
     res.json(student);
   } catch (err) {
@@ -54,21 +61,20 @@ app.delete("/students/:id", async (req, res) => {
   }
 });
 
-// -------------------- ATTENDANCE --------------------
+// ---------------- ATTENDANCE ----------------
 
-// Mark or update attendance
+// Mark attendance
 app.post("/attendance", async (req, res) => {
   try {
-    let { studentId, status, date } = req.body;
+    const { studentId, status, date } = req.body;
     if (!studentId || !status) return res.status(400).json({ error: "studentId and status are required" });
 
-    // Normalize date to midnight
     const d = new Date(date || new Date());
     d.setHours(0, 0, 0, 0);
 
     const record = await Attendance.findOneAndUpdate(
-      { studentId: studentId, date: d },
-      { $set: { status } },
+      { studentId, date: d },
+      { status },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
@@ -82,20 +88,13 @@ app.post("/attendance", async (req, res) => {
 app.get("/attendance", async (req, res) => {
   try {
     const records = await Attendance.find();
-    // Ensure studentId is string for front-end
-    const formatted = records.map(r => ({
-      _id: r._id,
-      studentId: String(r.studentId),
-      status: r.status,
-      date: r.date
-    }));
-    res.json(formatted);
+    res.json(records);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Get attendance for one student
+// Get attendance for a student
 app.get("/attendance/:studentId", async (req, res) => {
   try {
     const records = await Attendance.find({ studentId: req.params.studentId });
@@ -105,11 +104,11 @@ app.get("/attendance/:studentId", async (req, res) => {
   }
 });
 
-// -------------------- STATS --------------------
+// ---------------- STATS ----------------
 app.get("/stats", async (req, res) => {
   try {
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
 
     const totalStudents = await Student.countDocuments();
     const presentCount = await Attendance.countDocuments({ date: today, status: "Present" });
@@ -126,7 +125,6 @@ app.get("/stats", async (req, res) => {
   }
 });
 
-// -------------------- START SERVER --------------------
-
+// ---------------- START SERVER ----------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
